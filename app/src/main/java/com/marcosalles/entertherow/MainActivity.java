@@ -11,6 +11,7 @@ import com.marcosalles.entertherow.managers.GeofenceManager;
 public class MainActivity extends Activity {
 
     public static final String TAG = "Enter The Row";
+    private GeofenceManager manager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,7 +21,7 @@ public class MainActivity extends Activity {
             this.finish();
             return;
         }
-        GeofenceManager.instance().init(this);
+        manager = new GeofenceManager(this);
     }
 
     private boolean isGooglePlayServicesAvailable() {

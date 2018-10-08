@@ -35,8 +35,8 @@ public class Fence {
      * @param latitude  Latitude of the Geofence's center in degrees.
      * @param longitude Longitude of the Geofence's center in degrees.
      */
-    public Fence(double latitude, double longitude) {
-        this(UUID.randomUUID().toString(), latitude, longitude, 20F, Geofence.NEVER_EXPIRE, Geofence.GEOFENCE_TRANSITION_ENTER);
+    Fence(double latitude, double longitude) {
+        this(UUID.randomUUID().toString(), latitude, longitude, 20F, Geofence.NEVER_EXPIRE, Geofence.GEOFENCE_TRANSITION_ENTER|Geofence.GEOFENCE_TRANSITION_EXIT);
     }
 
     public String getId() {

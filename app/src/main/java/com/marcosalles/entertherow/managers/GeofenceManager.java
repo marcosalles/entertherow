@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -35,29 +36,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.marcosalles.entertherow.MainActivity.TAG;
+import static com.marcosalles.entertherow.services.GeofenceTransitionsIntentService.LAST_LOCATION_LAT;
+import static com.marcosalles.entertherow.services.GeofenceTransitionsIntentService.LAST_LOCATION_LNG;
 
 public class GeofenceManager extends LocationCallback implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-    public static final int PENDING_INTENT_REQUEST_CODE = 0;
-    public static final int PERMISSION_REQUEST_CODE = 1;
-    private static GeofenceManager instance;
+    private static final int PENDING_INTENT_REQUEST_CODE = 0;
+    private static final int PERMISSION_REQUEST_CODE = 1;
 
     private Activity context;
     private GoogleApiClient apiClient;
     private TheRow theRow;
     private PendingIntent pendingIntent;
     private LocationRequest locationRequest;
-    private LatLng lastLocation;
 
-    private GeofenceManager() {
-    }
-
-    public static GeofenceManager instance() {
-        if (instance == null) instance = new GeofenceManager();
-        return instance;
-    }
-
-    public GeofenceManager init(Activity context) {
+    public GeofenceManager(Activity context) {
         this.context = context;
         this.apiClient = new GoogleApiClient.Builder(context)
                 .addApi(LocationServices.API)
@@ -67,12 +60,6 @@ public class GeofenceManager extends LocationCallback implements GoogleApiClient
         this.apiClient.connect();
         this.theRow = TheRow.buildWith(context);
         Log.d(TAG, "Initialized manager");
-        return this;
-    }
-
-    public void notifyIfInsideBounds(CustomNotificationManager notifications) {
-        this.toast(notifications.getContext(), "You've just entered The Row!", Toast.LENGTH_LONG);
-        notifications.send("Enter The Row!", "You've just entered The Row!");
     }
 
     private void updateGeofences() {
@@ -112,11 +99,14 @@ public class GeofenceManager extends LocationCallback implements GoogleApiClient
     }
 
     private PendingIntent generateIntent() {
-        if (pendingIntent == null) {
-            Intent intent = new Intent(context, GeofenceTransitionsIntentService.class);
-            ContextCompat.startForegroundService(context, intent);
-            pendingIntent = PendingIntent.getService(context, PENDING_INTENT_REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        if (pendingIntent != null) {
+            LocationServices.GeofencingApi.removeGeofences(apiClient, pendingIntent);
+            pendingIntent.cancel();
+            pendingIntent = null;
         }
+        Intent intent = new Intent(context, GeofenceTransitionsIntentService.class);
+        ContextCompat.startForegroundService(context, intent);
+        pendingIntent = PendingIntent.getService(context, PENDING_INTENT_REQUEST_CODE, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         return pendingIntent;
     }
 
@@ -166,7 +156,10 @@ public class GeofenceManager extends LocationCallback implements GoogleApiClient
     public void onLocationResult(LocationResult locationResult) {
         super.onLocationResult(locationResult);
         Location lastLocation = locationResult.getLastLocation();
-        this.lastLocation = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+        SharedPreferences.Editor editor = context.getSharedPreferences(TAG, Context.MODE_PRIVATE).edit();
+        editor.putString(LAST_LOCATION_LAT,String.valueOf(lastLocation.getLatitude()));
+        editor.putString(LAST_LOCATION_LNG,String.valueOf(lastLocation.getLongitude()));
+        editor.commit();
     }
     /* END - LocationCallback */
 

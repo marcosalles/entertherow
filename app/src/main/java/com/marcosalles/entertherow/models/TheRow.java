@@ -6,16 +6,18 @@ import android.content.res.TypedArray;
 import com.google.android.gms.maps.model.LatLng;
 import com.marcosalles.entertherow.R;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class TheRow {
 
     private final Set<Fence> fences;
-    private final Set<LatLng> building;
+    private final List<LatLng> building;
 
-    public TheRow(Set<Fence> fences, Set<LatLng> building) {
+    public TheRow(Set<Fence> fences, List<LatLng> building) {
         this.fences = fences;
         this.building = building;
     }
@@ -32,7 +34,7 @@ public class TheRow {
         }
         centers.recycle();
 
-        Set<LatLng> building = new HashSet<>();
+        List<LatLng> building = new ArrayList<>();
         TypedArray corners = context.getResources().obtainTypedArray(R.array.the_row_corners);
         for (int i = 0; i < corners.length(); i += 2) {
             double lat = Double.valueOf(corners.getString(i));
@@ -42,14 +44,14 @@ public class TheRow {
         }
         corners.recycle();
 
-        return new TheRow(Collections.unmodifiableSet(fences), null);
+        return new TheRow(Collections.unmodifiableSet(fences), Collections.unmodifiableList(building));
     }
 
     public Set<Fence> getFences() {
         return fences;
     }
 
-    public Set<LatLng> getBuilding() {
+    public List<LatLng> getBuilding() {
         return building;
     }
 
