@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="the_row_centers">
+        <item>34.034120</item><item>-118.241225</item>
+        <item>34.033902</item><item>-118.241365</item>
+        <item>34.033690</item><item>-118.241501</item>
+        <item>34.033479</item><item>-118.241645</item>
+        <item>34.033265</item><item>-118.241784</item>
+    </array>
+    <array name="the_row_corners">
+        <item>34.034291</item><item>-118.241292</item>
+        <item>34.034164</item><item>-118.241000</item>
+        <item>34.033098</item><item>-118.241698</item>
+        <item>34.033224</item><item>-118.241981</item>
+    </array>
+</resources>
